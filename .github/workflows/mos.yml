@@ -16,7 +16,7 @@ jobs:
     - name: Check libyaml version
       run: brew list libyaml; ls /opt/homebrew/Cellar/libyaml/0.2.5
     - name: Check clang version
-      run: clang --version
+      run: clang --version; gmake --version
     - name: Check sh version
       run: sh --version
     - name: Add GNU bash to PATH
@@ -26,11 +26,11 @@ jobs:
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install ccache gnu-sed lld 
+      run: brew install ccache gnu-sed lld gmake
     - name: Add LLVM to PATH
       run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
-      run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH
+      run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH;echo /opt/homebrew/opt/make/libexec/gnubin/ >> $GITHUB_PATH
     - name: Show nproc
       run: sysctl -n hw.ncpu
     - name: Show sed version
@@ -43,11 +43,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-
     - name: Configure kernel
-      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang -I/opt/homebrew/Cellar/libyaml/0.2.5/include/ -L/opt/homebrew/Cellar/libyaml/0.2.5/lib/" \
+      run: ARCH=arm64 KBUILD_OUTPUT=build gmake "CC=ccache clang -I/opt/homebrew/Cellar/libyaml/0.2.5/include/ -L/opt/homebrew/Cellar/libyaml/0.2.5/lib/" \
         LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
       id: gmake_build
-      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
+      run: ARCH=arm64 KBUILD_OUTPUT=build gmake "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
     - name: Show ccache stats
       run: ccache -s
     - name: Upload Build Artifact
