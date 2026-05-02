@@ -18,7 +18,7 @@ jobs:
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install lld ccache gnu-sed
+      run: brew install lld ccache gnu-sed libyaml
     - name: Add GNU sed to PATH
       run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH
     - name: Show sed version
