@@ -25,7 +25,7 @@ jobs:
         path: ~/.ccache
         key: ${{ runner.os }}-ccache
         restore-keys: |
-          ${{ runner.os }}-ccache-${{ hashFiles('**/*.c', '**/*.cpp', '**/*.h') }}
+          ${{ runner.os }}-ccache
     - name: Configure kernel
       run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
