@@ -41,7 +41,7 @@ jobs:
           ${{ runner.os }}-ccache-
           
     - name: Clean kernel tree
-      run: make mrproper
+      run: make mrproper CLEAN_DOCS=0
 
     - name: Configure kernel
       run: make defconfig
