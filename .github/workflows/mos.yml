@@ -18,9 +18,13 @@ jobs:
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install lld ccache gnu-sed libyaml
+      run: brew install ccache gnu-sed
+    - name: Add LLVM to PATH
+      run:  echo $(brew --prefix llvm@20)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
       run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH
+    - name: Show nproc
+      run: sysctl -n hw.ncpu
     - name: Show sed version
       run: sed --version
     - name: Cache ccache
@@ -31,10 +35,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-
     - name: Configure kernel
-      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 gemstone_defconfig
+      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang  -I/opt/homebrew/include -L/opt/homebrew/lib" LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
       id: gmake_build
-      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j3
+      run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang  -I/opt/homebrew/include -L/opt/homebrew/lib" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
     - name: Show ccache stats
       run: ccache -s
     - name: Upload Build Artifact
