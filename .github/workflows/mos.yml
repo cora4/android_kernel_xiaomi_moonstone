@@ -13,8 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Check libyaml version
-      run: brew list libyaml; ls /opt/homebrew/Cellar/libyaml/0.2.5
+    - name: Install yaml
+      run: git clone --depth 1 --branch master --single-branch https://github.com/yaml/libyaml; cd libyaml;./configure; make; make install
     - name: Check clang version
       run: clang --version; make --version
     - name: Check sh version
