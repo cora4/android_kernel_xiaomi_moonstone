@@ -13,14 +13,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Build Dependencies
+      id: build_depends
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y --no-install-recommends \
+          ccache aarch64-linux-gnu-gcc \
     - name: configure
       run: export ARCH=arm64; export CROSS_COMPILE=aarch64-linux-gnu-
     - name: make
       run: TARGET_BUILD_VARIANT=user scripts/gki/generate_defconfig.sh gemstone_defconfig
     - name: make check
-      run: KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 gemstone_defconfig
+      run: KBUILD_OUTPUT=build make "CC=ccache aarch64-linux-gnu-gcc" LLVM=1 gemstone_defconfig
     - name: compile
-      run: KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 -j$(nproc)
+      run: KBUILD_OUTPUT=build make "CC=ccache aarch64-linux-gnu-gcc" LLVM=1 -j$(nproc)
     - name: Upload Build Artifact
       if: ${{ always() && steps.compile.outcome == 'success' }}
       uses: actions/upload-artifact@v6
