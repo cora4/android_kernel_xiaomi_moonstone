@@ -18,9 +18,9 @@ jobs:
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install ccache gnu-sed
+      run: brew install ccache gnu-sed lld
     - name: Add LLVM to PATH
-      run:  echo $(brew --prefix llvm@20)/bin >> $GITHUB_PATH
+      run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
       run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH
     - name: Show nproc
