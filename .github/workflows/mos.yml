@@ -9,16 +9,12 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-24.04-arm
+    runs-on: macos-15
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build Dependencies
-      id: build_depends
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
-          ccache lld clang llvm
+    - name: Check clang version
+      run: clang --version
     - name: Cache ccache
       uses: actions/cache@v3
       with:
