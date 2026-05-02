@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
 
     steps:
     - uses: actions/checkout@v4
@@ -19,10 +19,19 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
           ccache lld clang llvm
+    - name: Cache ccache
+      uses: actions/cache@v3
+      with:
+        path: ~/.ccache
+        key: ${{ runner.os }}-ccache-${{ hashFiles('**/*.c', '**/*.cpp', '**/*.h') }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-
     - name: Configure kernel
       run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
       run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(nproc)
+    - name: Show ccache stats
+        run: ccache -s
     - name: Upload Build Artifact
       if: ${{ always() && steps.compile.outcome == 'success' }}
       uses: actions/upload-artifact@v6
