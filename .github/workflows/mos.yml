@@ -13,8 +13,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Check clang version
-      run: clang --version; make --version
+    - name: Install build tools
+      run: |
+        brew install autoconf automake libtool
+
+    - name: Build and install libyaml from source
+      run: |
+        curl -LO https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz
+        tar xzf yaml-0.2.5.tar.gz
+        cd yaml-0.2.5
+        ./configure --prefix=/usr/local
+        make
+        sudo make install
     - name: Check sh version
       run: sh --version
     - name: Add GNU bash to PATH
