@@ -17,6 +17,12 @@ jobs:
       run: brew list libyaml; ls /opt/homebrew/Cellar/libyaml/0.2.5
     - name: Check clang version
       run: clang --version
+    - name: Check sh version
+      run: sh --version
+    - name: Add GNU bash to PATH
+      run:  echo /opt/homebrew/opt/bash/bin/ >> $GITHUB_PATH;export SHELL=/opt/homebrew/opt/bash/bin/bash;export PATH="/opt/homebrew/opt/bash/bin:$PATH"
+    - name: Check sh version again
+      run: sh --version
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
