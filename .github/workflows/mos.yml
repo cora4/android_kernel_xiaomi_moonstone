@@ -13,18 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install build tools
-      run: |
-        brew install autoconf automake libtool
-
-    - name: Build and install libyaml from source
-      run: |
-        curl -LO https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz
-        tar xzf yaml-0.2.5.tar.gz
-        cd yaml-0.2.5
-        ./configure --prefix=/usr/local
-        make
-        sudo make install
     - name: Check sh version
       run: sh --version
     - name: Add GNU bash to PATH
@@ -37,6 +25,14 @@ jobs:
       run: mkdir -p ~/.ccache
     - name: Install dependencies
       run: brew install ccache gnu-sed lld make bison flex
+    - name: Build and install libyaml from source
+      run: |
+        curl -LO https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz
+        tar xzf yaml-0.2.5.tar.gz
+        cd yaml-0.2.5
+        ./configure --prefix=/usr/local
+        make
+        sudo make install
     - name: Add LLVM to PATH
       run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
@@ -53,11 +49,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-
     - name: Configure kernel
-      run: ARCH=arm64 KBUILD_OUTPUT=build gmake CFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" "CC=ccache clang" \
+      run: ARCH=arm64 KBUILD_OUTPUT=build gmake CFLAGS="-I/usr/local/include/" LDFLAGS="-L/usr/local/lib" "CC=ccache clang" \
         LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
       id: gmake_build
-      run: ARCH=arm64 KBUILD_OUTPUT=build gmake CFLAGS="-I/opt/homebrew/include" LDFLAGS="-L/opt/homebrew/lib" "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
+      run: ARCH=arm64 KBUILD_OUTPUT=build gmake CFLAGS="-I/usr/local/include/" LDFLAGS="-L/usr/local/lib" "CC=ccache clang" \
+        LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
     - name: Show ccache stats
       run: ccache -s
     - name: Upload Build Artifact
