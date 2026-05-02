@@ -24,7 +24,7 @@ jobs:
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install ccache gnu-sed lld make aarch64-unknown-linux-gnu
+      run: brew tap messense/macos-cross-toolchains; brew install ccache gnu-sed lld make aarch64-unknown-linux-gnu
     - name: Add LLVM to PATH
       run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
