@@ -16,13 +16,15 @@ jobs:
     - name: Check libyaml version
       run: brew list libyaml; ls /opt/homebrew/Cellar/libyaml/0.2.5
     - name: Check clang version
-      run: clang --version; gmake --version
+      run: clang --version; make --version
     - name: Check sh version
       run: sh --version
     - name: Add GNU bash to PATH
       run:  echo /opt/homebrew/opt/bash/bin/ >> $GITHUB_PATH;export SHELL=/opt/homebrew/opt/bash/bin/bash;export PATH="/opt/homebrew/opt/bash/bin:$PATH"
+    - name: Add GNU make to PATH
+      run:  echo /opt/homebrew/opt/make/bin/ >> $GITHUB_PATH;export PATH="/opt/homebrew/opt/make/bin:$PATH"
     - name: Check sh version again
-      run: sh --version
+      run: sh --version; make --version
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
