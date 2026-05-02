@@ -19,6 +19,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
           ccache lld clang llvm
+    - name: Show nproc
+      run: nproc; cat /proc/cpuinfo
     - name: Configure kernel
       run: mkdir ~/.ccache
     - name: Cache ccache
