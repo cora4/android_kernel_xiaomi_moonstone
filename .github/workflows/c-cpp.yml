@@ -31,7 +31,7 @@ jobs:
     - name: Build kernel
       run: ARCH=arm64 KBUILD_OUTPUT=build make "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(nproc)
     - name: Show ccache stats
-        run: ccache -s
+      run: ccache -s
     - name: Upload Build Artifact
       if: ${{ always() && steps.compile.outcome == 'success' }}
       uses: actions/upload-artifact@v6
