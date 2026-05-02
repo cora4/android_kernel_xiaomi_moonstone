@@ -18,7 +18,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
-          ccache aarch64-linux-gnu-gcc \
+          ccache gcc-aarch64-linux-gnu
     - name: configure
       run: export ARCH=arm64; export CROSS_COMPILE=aarch64-linux-gnu-
     - name: make
