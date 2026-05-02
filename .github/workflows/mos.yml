@@ -41,8 +41,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-
     - name: Configure kernel
-      run: export ARCH=arm64 KBUILD_OUTPUT=build "CC=ccache clang" \
-        LLVM=1 LLVM_IAS=1 CROSS_COMPILE=aarch64-unknown-linux-gnu- gmake mrproper; gmake gemstone_defconfig
+      run: export ARCH=arm64 KBUILD_OUTPUT=build "CC=ccache clang" LLVM=1 LLVM_IAS=1 CROSS_COMPILE=aarch64-unknown-linux-gnu- gmake mrproper; gmake gemstone_defconfig
     - name: Build kernel
       id: gmake_build
       run: |
