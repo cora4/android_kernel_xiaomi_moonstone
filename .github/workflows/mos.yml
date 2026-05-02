@@ -13,46 +13,36 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Check sh version
-      run: sh --version
-    - name: Add GNU bash to PATH
-      run:  echo /opt/homebrew/opt/bash/bin/ >> $GITHUB_PATH;export SHELL=/opt/homebrew/opt/bash/bin/bash;export PATH="/opt/homebrew/opt/bash/bin:$PATH"
-    - name: Add GNU make to PATH
-      run:  echo /opt/homebrew/opt/make/bin/ >> $GITHUB_PATH;export PATH="/opt/homebrew/opt/make/bin:$PATH"
-    - name: Check sh version again
-      run: sh --version; make --version
-    - name: mkdir cache dir
-      run: mkdir -p ~/.ccache
-    - name: Install dependencies
-      run: brew tap messense/macos-cross-toolchains; brew install ccache gnu-sed lld make aarch64-unknown-linux-gnu
-    - name: Add LLVM to PATH
-      run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
-    - name: Add GNU sed to PATH
-      run:  echo /opt/homebrew/opt/gnu-sed/libexec/gnubin >> $GITHUB_PATH;echo /opt/homebrew/opt/make/libexec/gnubin/ >> $GITHUB_PATH
-    - name: Show nproc
-      run: sysctl -n hw.ncpu
-    - name: Show sed version
-      run: sed --version
-    - name: Cache ccache
-      uses: actions/cache@v3
-      with:
-        path: ~/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('**/*.c', '**/*.cpp', '**/*.h') }}
-        restore-keys: |
-          ${{ runner.os }}-ccache-
+    - name: Install Homebrew cross-toolchain & dependencies
+      run: |
+        brew install llvm
+        brew tap messense/macos-cross-toolchains
+        brew install aarch64-unknown-linux-gnu
+
+    - name: Set environment variables
+      run: |
+        echo "KBUILD_OUTPUT=build" >> $GITHUB_ENV
+        echo "ARCH=arm64" >> $GITHUB_ENV
+        echo "CROSS_COMPILE=aarch64-unknown-linux-gnu-" >> $GITHUB_ENV
+        echo "PATH=/opt/homebrew/opt/llvm/bin:$PATH" >> $GITHUB_ENV
+
+    - name: Check asm symlink
+      run: ls -l include/asm
+
+    - name: Clean kernel tree
+      run: make -C ./mrproper
+
     - name: Configure kernel
-      run: export ARCH=arm64 KBUILD_OUTPUT=build "CC=ccache clang" LLVM=1 LLVM_IAS=1 CROSS_COMPILE=aarch64-unknown-linux-gnu- gmake mrproper; gmake gemstone_defconfig
-    - name: Build kernel
+      run: make -C ./ defconfig
+
+    - name: Build Linux kernel with Clang
       id: gmake_build
       run: |
-        export C_INCLUDE_PATH=/opt/homebrew/include:$C_INCLUDE_PATH
-        export LIBRARY_PATH=/opt/homebrew/lib:$LIBRARY_PATH
-        ARCH=arm64 KBUILD_OUTPUT=build gmake "CC=ccache clang" LLVM=1 LLVM_IAS=1 CROSS_COMPILE=aarch64-unknown-linux-gnu- -j$(sysctl -n hw.ncpu)
-    - name: Show ccache stats
-      run: ccache -s
-    - name: Upload Build Artifact
+        make -C ./ -j$(sysctl -n hw.ncpu) CC=clang HOSTCC=clang LLVM=1
+
+    - name: Archive built kernel
       if: ${{ always() && steps.gmake_build.outcome == 'success' }}
       uses: actions/upload-artifact@v6
       with:
         name: moonstone-kernel
-        path: build/arch/arm64/boot/
+        path: arch/arm64/boot/
