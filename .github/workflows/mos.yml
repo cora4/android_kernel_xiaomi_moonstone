@@ -13,12 +13,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Check libyaml version
+      run: brew list libyaml; ls /opt/homebrew/Cellar/libyaml/0.2.5
     - name: Check clang version
       run: clang --version
     - name: mkdir cache dir
       run: mkdir -p ~/.ccache
     - name: Install dependencies
-      run: brew install ccache gnu-sed lld
+      run: brew install ccache gnu-sed lld 
     - name: Add LLVM to PATH
       run:  echo $(brew --prefix llvm@22)/bin >> $GITHUB_PATH
     - name: Add GNU sed to PATH
