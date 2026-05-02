@@ -14,7 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install yaml
-      run: git clone --depth 1 --branch master --single-branch https://github.com/yaml/libyaml; cd libyaml;./configure; make; make install
+      run: wget https://github.com/yaml/libyaml/releases/download/0.2.5/yaml-0.2.5.tar.gz; tar xf yaml-0.2.5.tar.gz;cd yaml-0.2.5/;./configure; make; make install
     - name: Check clang version
       run: clang --version; make --version
     - name: Check sh version
