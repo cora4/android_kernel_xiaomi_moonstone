@@ -49,7 +49,7 @@ jobs:
         LLVM=1 LLVM_IAS=1 gemstone_defconfig
     - name: Build kernel
       id: gmake_build
-      run: ARCH=arm64 KBUILD_OUTPUT=build gmake "CC=ccache clang" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
+      run: ARCH=arm64 KBUILD_OUTPUT=build gmake "CC=ccache clang -I/opt/homebrew/Cellar/libyaml/0.2.5/include/ -L/opt/homebrew/Cellar/libyaml/0.2.5/lib/" LLVM=1 LLVM_IAS=1 -j$(sysctl -n hw.ncpu)
     - name: Show ccache stats
       run: ccache -s
     - name: Upload Build Artifact
