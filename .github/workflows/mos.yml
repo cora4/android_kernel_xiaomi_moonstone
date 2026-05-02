@@ -15,7 +15,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Install Homebrew cross-toolchain & dependencies
       run: |
-        brew install ccache gnu-sed lld make
+        brew install ccache gnu-sed lld make coreutils
         brew tap messense/macos-cross-toolchains
         brew install aarch64-unknown-linux-gnu
 
@@ -24,7 +24,7 @@ jobs:
         echo "KBUILD_OUTPUT=build" >> $GITHUB_ENV
         echo "ARCH=arm64" >> $GITHUB_ENV
         echo "CROSS_COMPILE=aarch64-unknown-linux-gnu-" >> $GITHUB_ENV
-        echo "PATH=/opt/homebrew/opt/llvm/bin:$PATH" >> $GITHUB_ENV
+        echo "PATH=/opt/homebrew/opt/llvm/bin:$PATH" >> $GITHUB_ENV; export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
     - name: Add GNU bash to PATH
       run:  echo /opt/homebrew/opt/bash/bin/ >> $GITHUB_PATH;export 
     - name: Add LLVM to PATH
@@ -41,7 +41,7 @@ jobs:
           ${{ runner.os }}-ccache-
           
     - name: Clean kernel tree
-      run: make mrproper CLEAN_DOCS=0
+      run: make mrproper
 
     - name: Configure kernel
       run: make defconfig
